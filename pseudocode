@@ -1,0 +1,95 @@
+// Initial setup
+const API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+
+// Get DOM elements
+const searchForm = document.querySelector("form");
+const searchInput = document.querySelector("input");
+
+const resultBox = document.querySelector(".result-box");
+const errorBox = document.querySelector(".error-box");
+
+const wordDisplay = document.querySelector(".word");
+const phoneticDisplay = document.querySelector(".phonetic");
+const definitionDisplay = document.querySelector(".definition");
+const exampleDisplay = document.querySelector(".example");
+const synonymsDisplay = document.querySelector(".synonyms");
+const audioElement = document.querySelector("audio");
+
+// Event listener(form submission)
+searchForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const userInput = searchInput.value.trim();
+
+    if (userInput === "") {
+        showError("Please enter a word");
+        return;
+    }
+
+    fetchWord(userInput);
+});
+
+// Fetch data from API
+async function fetchWord(word) {
+    try {
+        const response = await fetch(API_URL + word);
+
+        if (!response.ok) {
+            throw new Error("Word not found");
+        }
+
+        const data = await response.json();
+
+        displayWord(data);
+
+        errorBox.textContent = "";
+        errorBox.style.display = "none";
+
+    } catch (error) {
+        showError("Word not found or API error");
+    }
+}
+
+// Display data on the page
+function displayWord(data) {
+    const entry = data[0];
+
+    const word = entry.word;
+    const phonetic = entry.phonetic || "";
+    const meaning = entry.meanings[0];
+    const definition = meaning.definitions[0];
+    const example = definition.example || "No example available";
+    const synonyms = definition.synonyms || "No synonyms available";
+
+    let audioURL = null;
+    for (const phoneticItem of entry.phonetics) {
+        if (phoneticItem.audio) {
+            audioURL = phoneticItem.audio;
+            break;
+        }
+    }
+
+    wordDisplay.textContent = word;
+    phoneticDisplay.textContent = phonetic;
+    definitionDisplay.textContent = definition.definition;
+    exampleDisplay.textContent = example;
+    synonymsDisplay.textContent = synonyms.join(", ");
+
+    if (audioURL) {
+        audioElement.src = audioURL;
+        audioElement.style.display = "block";
+    } else {
+        audioElement.style.display = "none";
+    }
+
+    resultBox.style.display = "block";
+}
+
+// Error handling
+function showError(message) {
+    errorBox.textContent = message;
+    errorBox.style.display = "block";
+    resultBox.style.display = "none";
+}
+
+

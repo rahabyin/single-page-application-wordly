@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordly Dictionary</title>
+    <link rel="stylesheet" href="style.css"/> 
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header>
+         <h1>Worldly Dictionary</h1>
+        </header>
+
+        <main class="main content">
+            <section class="search section">
+                <h2 class="search title">Discover New Words</h2>
+                <p class="search sub-title">Search for definitions, pronunciations, and synonymns.</p>
+                <form id="searchForm">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search a word...(e.g., software, introvert)"
+                        aria-label="Search word"
+                    />
+                    <button type="submit">Search</button>
+                </form>
+
+                <p id="error" class="error"></p>
+
+             </section>
+
+             <section>
+                <div id="result" class="result hidden">
+                    <h2 id="word"></h2>
+                    <p id="phonetic"></p>
+
+                    <div class="audio-container">
+                        <audio id="audio" controls></audio>
+                    </div>
+                
+                    <h3>Definition:</h3>
+                    <p id="definition"></p>
+                    <h3>Example:</h3>
+                    <p id="example"></p>
+                    <h3>Synonymns:</h3>
+                    <p id="synonyms"></p>
+                </div>
+             </section>
+        </main>
+    </div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

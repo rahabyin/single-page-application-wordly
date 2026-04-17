@@ -1,0 +1,88 @@
+body {
+  font-family: 'Times New Roman', Times, serif;
+  background: #f9d8df;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 12px 15px;
+  width: 70%;
+  max-width: 500px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+/* when user clicks inside */
+input:focus {
+  border-color: #0077cc;
+  box-shadow: 0 0 8px rgba(0, 119, 204, 0.3);
+}
+
+button {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 25px;
+  border: none;
+  background: #d7699d;
+  color: white;
+  transition: 0.3s ease;
+}
+.audio-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* hover effect */
+button:hover {
+  background: #005fa3;
+  transform: scale(1.05);
+}
+
+/* Hover effect for button */
+button:hover {
+  background: #b91262;
+  color: rgb(255, 255, 255);
+  transform: scale(1.05);
+}
+
+.result {
+  background: rgb(243, 146, 177);
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  transition: 0.3s ease;
+}
+
+/* Hover effect for result box */
+.result:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+.hidden {
+  display: none;
+}
+
+.error {
+  color: red;
+  transition: 0.3s ease;
+}
+
+/* Hover effect for error text */
+.error:hover {
+  color: darkred;
+}
