@@ -20,7 +20,6 @@ const exampleEl = document.getElementById("example");
 const synonymsEl = document.getElementById("synonyms");
 const audioEl = document.getElementById("audio");
 
-
 // TASK 2: HANDLE FORM SUBMISSION
 form.addEventListener("submit", async (e) => {
   e.preventDefault(); //prevents page reload
@@ -145,7 +144,6 @@ async function fetchSynonyms(word) {
   }
 }
 
-
 // RENDER SYNONYMS (CLICKABLE)
 function renderSynonyms(list = []) {
   synonymsEl.innerHTML = ""; // Clears previous synonyms
@@ -174,7 +172,6 @@ function renderSynonyms(list = []) {
     synonymsEl.appendChild(span);
   });
 }
-
 
 // TASK 6: ERROR HANDLING FUNCTION
 function showError(msg) {
