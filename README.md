@@ -43,10 +43,10 @@
 ## APIs Used
 
 *  Dictionary API:  
-  https://api.dictionaryapi.dev/
+  https://dictionaryapi.dev/
 
 * Synonyms API (Datamuse):  
-  https://api.datamuse.com/
+  https://datamuseapi.com/
 
 ---
 
