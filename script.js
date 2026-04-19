@@ -1,3 +1,6 @@
+// INITIAL SETUP
+const API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+
 // TASK 1: GET HTML ELEMENTS
 // Form where user submits a word
 const form = document.getElementById("searchForm");
@@ -19,79 +22,83 @@ const audioEl = document.getElementById("audio");
 
 
 // TASK 2: HANDLE FORM SUBMISSION
-if (form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const word = input.value.trim();
+  const word = input.value.trim();
+  if (!word) return showError("Please enter a word.");
 
-    if (!word) {
-      showError("Please enter a word.");
-      return;
-    }
+  // TASK 3: FETCH DATA FROM API
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
 
-    // TASK 3: FETCH DATA FROM API
-    try {
-      const res = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`  // FIXED: removed space
-      );
+    // If response is not OK (e.g. word not found)
+    if (!res.ok) throw new Error();
 
-      // If response is not OK (e.g. word not found)
-      if (!res.ok) {
-        throw new Error("Word not found");
-      }
+     // Convert response to JSON
+    const data = await res.json();
 
-      // Convert response to JSON
-      const data = await res.json();
+    // Display data on the page
+    displayWord(data[0]);
 
-      // Display data on the page
-      displayWord(data);
+    // Fetch better synonyms after rendering
+    fetchSynonyms(word);
 
-      // Clear previous errors
-      errorBox.textContent = "";
+    // Clear previous errors
+    errorBox.textContent = "";
 
-    } catch (error) {
-      // Handle any errors (network issues or invalid word)
-      showError("Word not found or API error.");
-    }
-  });
-}
+  } catch {
+    showError("Word not found or API error."); // Handle any errors (network issues or invalid word)
+  }
+});
 
 
 // TASK 4: DISPLAY DATA ON THE PAGE
-function displayWord(data) {
-  // Get first result from API response
-  const entry = data[0];
+function displayWord(entry) {
+  wordEl.textContent = entry.word;
+  phoneticEl.textContent = entry.phonetic || "";
 
-  // Extract basic word info
-  const word = entry.word;
-  const phonetic = entry.phonetic || "";
+  let definition = "No definition available";
+  let example = "No example available";
+  let synonyms = [];
 
-  // Get first meaning and definition
-  const meaning = entry.meanings[0];
-  const definition = meaning.definitions[0].definition;
+  // LOOP THROUGH ALL MEANINGS (FIX)
+  for (let meaning of entry.meanings) {
+    for (let def of meaning.definitions) {
 
-  // Optional example (fallback if missing)
-  const example =
-    meaning.definitions[0].example || "No example available";
+      // Get first definition
+      if (definition === "No definition available") {
+        definition = def.definition;
+      }
 
-  // Optional synonyms (fallback if missing)
-  const synonyms =
-    meaning.definitions[0].synonyms?.join(", ") ||
-    "No synonyms available";
+      // FIND FIRST AVAILABLE EXAMPLE
+      if (example === "No example available" && def.example) {
+        example = def.example;
+      }
 
-  // Find pronunciation audio (if available)
-  const audio =
-    entry.phonetics.find((p) => p.audio)?.audio || "";
+      // COLLECT SYNONYMS (accurate)
+      if (def.synonyms && def.synonyms.length) {
+        synonyms = synonyms.concat(def.synonyms);
+      }
+    }
 
-  // TASK 5: UPDATE HTML CONTENT
-  wordEl.textContent = word;
-  phoneticEl.textContent = phonetic;
+    // Also check meaning-level synonyms
+    if (meaning.synonyms && meaning.synonyms.length) {
+      synonyms = synonyms.concat(meaning.synonyms);
+    }
+  }
+
+  // Remove duplicates
+  synonyms = [...new Set(synonyms)];
+
+  // Update UI
   definitionEl.textContent = definition;
   exampleEl.textContent = example;
-  synonymsEl.textContent = synonyms;
+
+  renderSynonyms(synonyms);
 
   // Handle audio playback
+  const audio = entry.phonetics.find(p => p.audio)?.audio;
   if (audio) {
     audioEl.src = audio;
     audioEl.style.display = "block";
@@ -103,12 +110,53 @@ function displayWord(data) {
   resultBox.classList.remove("hidden");
 }
 
+// BETTER SYNONYMS (fallback only if needed)
+async function fetchSynonyms(word) {
+  try {
+    const res = await fetch(`https://api.datamuse.com/words?rel_syn=${word}`);
+    const data = await res.json();
+
+    const apiSynonyms = data.slice(0, 8).map(w => w.word);
+
+    // Only replace if dictionary synonyms were weak
+    if (!synonymsEl.children.length || synonymsEl.textContent.includes("No synonyms")) {
+      renderSynonyms(apiSynonyms);
+    }
+
+  } catch {
+    console.log("Synonym fallback failed");
+  }
+}
+
+
+// RENDER SYNONYMS (CLICKABLE)
+function renderSynonyms(list) {
+  synonymsEl.innerHTML = "";
+
+  if (!list.length) {
+    synonymsEl.textContent = "No synonyms available";
+    return;
+  }
+
+  list.slice(0, 10).forEach(word => {
+    const span = document.createElement("span");
+    span.textContent = word;
+    span.classList.add("synonym");
+
+    span.addEventListener("click", () => {
+      input.value = word;
+      form.dispatchEvent(new Event("submit"));
+    });
+
+    synonymsEl.appendChild(span);
+  });
+}
+
 
 // TASK 6: ERROR HANDLING FUNCTION
-function showError(message) {
-  // Display error message
-  errorBox.textContent = message;
-
+function showError(msg) {
+    // Display error message
+  errorBox.textContent = msg;
   // Hide results when error occurs
   resultBox.classList.add("hidden");
 }

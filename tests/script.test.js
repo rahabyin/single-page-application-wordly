@@ -2,12 +2,8 @@
  * @jest-environment jsdom
  */
 
-// Import your script file (make sure path is correct)
-require("../script.js");
-
 describe("Dictionary SPA Tests", () => {
 
-  // Reset DOM before each test
   beforeEach(() => {
     document.body.innerHTML = `
       <form id="searchForm"></form>
@@ -23,15 +19,12 @@ describe("Dictionary SPA Tests", () => {
       <p id="synonyms"></p>
       <audio id="audio"></audio>
     `;
-    
-    // Re-require script to re-attach event listeners to fresh DOM
+
     jest.resetModules();
     require("../script.js");
   });
 
-  // =========================
-  // ✅ TEST 1: Empty Input
-  // =========================
+  // TEST 1
   test("shows error if input is empty", () => {
     const form = document.getElementById("searchForm");
 
@@ -41,10 +34,7 @@ describe("Dictionary SPA Tests", () => {
       .toBe("Please enter a word.");
   });
 
-
-  // =========================
-  // ✅ TEST 2: Fetch is called
-  // =========================
+  // TEST 2
   test("calls fetch with correct URL", async () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -60,18 +50,14 @@ describe("Dictionary SPA Tests", () => {
 
     form.dispatchEvent(new Event("submit"));
 
-    // FIXED: Wait for async handler
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(r => setTimeout(r, 0));
 
     expect(fetch).toHaveBeenCalledWith(
-      "https://api.dictionaryapi.dev/api/v2/entries/en/hello"  // FIXED: removed space
+      "https://api.dictionaryapi.dev/api/v2/entries/en/hello"
     );
   });
 
-
-  // =========================
-  // ✅ TEST 3: Display Data
-  // =========================
+  // TEST 3
   test("displays fetched word data", async () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -105,17 +91,15 @@ describe("Dictionary SPA Tests", () => {
 
     form.dispatchEvent(new Event("submit"));
 
-    // wait for async code to finish
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(r => setTimeout(r, 0));
 
     expect(document.getElementById("word").textContent).toBe("hello");
     expect(document.getElementById("definition").textContent).toBe("greeting");
+    expect(document.getElementById("example").textContent).toBe("Hello there!");
+    expect(document.getElementById("synonyms").textContent).toContain("hi");
   });
 
-
-  // =========================
-  // ❌ TEST 4: Error Handling
-  // =========================
+  // TEST 4
   test("shows error when fetch fails", async () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({ ok: false })
@@ -128,7 +112,7 @@ describe("Dictionary SPA Tests", () => {
 
     form.dispatchEvent(new Event("submit"));
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(r => setTimeout(r, 0));
 
     expect(document.getElementById("error").textContent)
       .toBe("Word not found or API error.");

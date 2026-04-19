@@ -1,4 +1,4 @@
-# Wordly Dictionary SPA
+# 📚 Wordly Dictionary SPA
 
 ## Description
 
@@ -17,36 +17,49 @@
 
 ---
 
-## Technologies
-
-* HTML
-* CSS
-* JavaScript (Vanilla JS)
-* Fetch API
-* Free Dictionary API
-* Jest (for testing)
-
----
-
 ## How It Works
 
 1. User enters a word in the search bar
-2. Form submission is captured using JavaScript
+2. JavaScript listens for the form submission event
 3. A request is sent to the Dictionary API
-4. The response is processed and displayed on the page
-5. If an error occurs, a message is shown instead
+4. The API returns word data in JSON format  
+5. JavaScript processes the data and updates the DOM  
+6. Synonyms are fetched from a secondary API (Datamuse)  
+7. Clicking a synonym triggers a new search automatically  
+8. If an error occurs, a message is shown instead
+
+---
+
+## Technologies
+
+* HTML5 – Structure  
+* CSS3 – Styling and layout  
+* JavaScript (ES6+) – Logic and DOM manipulation  
+* Fetch API – Data retrieval  
+* Jest – Unit testing  
+
+---
+
+## APIs Used
+
+*  Dictionary API:  
+  https://api.dictionaryapi.dev/
+
+* Synonyms API (Datamuse):  
+  https://api.datamuse.com/
 
 ---
 
 ## How to Run
 
-1. Open the project folder
+1. Open the project folder in VS Code
 2. Open `index.html` in your browser
    *(or use Live Server in VS Code)*
 
 ---
 
 ## Run Tests
+This project uses **Jest** for testing.
 
 ```bash
 npm install
@@ -58,11 +71,11 @@ npm test
 ## Project Structure
 
 ```
-pseudocode
 index.html
 style.css
 script.js
 tests/script.test.js
+pseudocode
 README.md
 ```
 
@@ -72,8 +85,16 @@ README.md
 
 * Save favorite words
 * Dark mode
-* Search history
+* Search history feature
 * Multiple definitions
+* Mobile responsiveness improvements
+* Better audio controls
+
+---
+
+📌 Summary
+
+Wordly is a modern dictionary application that demonstrates how JavaScript can be used to build interactive, API-driven web applications with real-time updates and clean user experience.
 
 ---
 
@@ -82,3 +103,4 @@ README.md
 Rahab Wanja.
 
 ---
+

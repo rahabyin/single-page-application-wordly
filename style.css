@@ -28,7 +28,7 @@ input {
 /* when user clicks inside */
 input:focus {
   border-color: #0077cc;
-  box-shadow: 0 0 8px rgba(0, 119, 204, 0.3);
+  box-shadow: 0 0 8px rgba(204, 0, 156, 0.225);
 }
 
 button {
@@ -46,11 +46,6 @@ button {
   margin-top: 20px;
 }
 
-/* hover effect */
-button:hover {
-  background: #005fa3;
-  transform: scale(1.05);
-}
 
 /* Hover effect for button */
 button:hover {
@@ -85,4 +80,20 @@ button:hover {
 /* Hover effect for error text */
 .error:hover {
   color: darkred;
+}
+
+/*SYNONYMS STYLE */
+.synonym {
+  display: inline-block;
+  margin: 5px;
+  padding: 6px 12px;
+  background: white;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.synonym:hover {
+  background: #b91262;
+  color: white;
 }
