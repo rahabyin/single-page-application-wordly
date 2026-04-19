@@ -23,10 +23,10 @@ const audioEl = document.getElementById("audio");
 
 // TASK 2: HANDLE FORM SUBMISSION
 form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  e.preventDefault(); //prevents page reload
 
-  const word = input.value.trim();
-  if (!word) return showError("Please enter a word.");
+  const word = input.value.trim(); // Get user input and remove extra spaces
+  if (!word) return showError("Please enter a word."); // Validate empty input
 
   // TASK 3: FETCH DATA FROM API
   try {
@@ -47,36 +47,44 @@ form.addEventListener("submit", async (e) => {
     // Clear previous errors
     errorBox.textContent = "";
 
-  } catch {
-    showError("Word not found or API error."); // Handle any errors (network issues or invalid word)
-  }
-});
+  } catch (error) {
+      console.error("Fetch error:", error); // Logs error for debugging
 
+      // Shows error messages
+      if (error.message === "Failed to fetch") {
+        showError("Network error. Check your internet connection.");
+      } else {
+        showError("Word not found or API error.");
+      }
+    }
+});
 
 // TASK 4: DISPLAY DATA ON THE PAGE
 function displayWord(entry) {
+  // Show word and phonetic spelling
   wordEl.textContent = entry.word;
   phoneticEl.textContent = entry.phonetic || "";
 
+  // Default fallback values
   let definition = "No definition available";
   let example = "No example available";
   let synonyms = [];
 
-  // LOOP THROUGH ALL MEANINGS (FIX)
+  // Loop through meanings and definitions
   for (let meaning of entry.meanings) {
     for (let def of meaning.definitions) {
 
-      // Get first definition
+      // Get first available definition
       if (definition === "No definition available") {
         definition = def.definition;
       }
 
-      // FIND FIRST AVAILABLE EXAMPLE
+      // Get first available example
       if (example === "No example available" && def.example) {
         example = def.example;
       }
 
-      // COLLECT SYNONYMS (accurate)
+      // Collect synonyms from definitions
       if (def.synonyms && def.synonyms.length) {
         synonyms = synonyms.concat(def.synonyms);
       }
@@ -88,17 +96,24 @@ function displayWord(entry) {
     }
   }
 
-  // Remove duplicates
+  // Remove duplicates synonyms
   synonyms = [...new Set(synonyms)];
 
   // Update UI
   definitionEl.textContent = definition;
   exampleEl.textContent = example;
 
+  // Render synonyms as clickable elements
   renderSynonyms(synonyms);
+
+  // Fallback API call if no synonyms found
+  if (!synonyms.length) {
+  fetchSynonyms(entry.word);
+}
 
   // Handle audio playback
   const audio = entry.phonetics.find(p => p.audio)?.audio;
+
   if (audio) {
     audioEl.src = audio;
     audioEl.style.display = "block";
@@ -110,15 +125,17 @@ function displayWord(entry) {
   resultBox.classList.remove("hidden");
 }
 
-// BETTER SYNONYMS (fallback only if needed)
+// FALLBACK SYNONYMS API (fallback only if needed)
 async function fetchSynonyms(word) {
   try {
+    // Fetch synonyms from Datamuse API
     const res = await fetch(`https://api.datamuse.com/words?rel_syn=${word}`);
     const data = await res.json();
 
+    // Extract top 8 synonyms
     const apiSynonyms = data.slice(0, 8).map(w => w.word);
 
-    // Only replace if dictionary synonyms were weak
+    // Show fallback synonyms if needed
     if (!synonymsEl.children.length || synonymsEl.textContent.includes("No synonyms")) {
       renderSynonyms(apiSynonyms);
     }
@@ -130,19 +147,25 @@ async function fetchSynonyms(word) {
 
 
 // RENDER SYNONYMS (CLICKABLE)
-function renderSynonyms(list) {
-  synonymsEl.innerHTML = "";
+function renderSynonyms(list = []) {
+  synonymsEl.innerHTML = ""; // Clears previous synonyms
 
-  if (!list.length) {
+  // Remove duplicates and invalid values
+  const cleanList = [...new Set(list)].filter(Boolean);
+
+  // Handle empty synonyms case
+  if (list.length === 0) {
     synonymsEl.textContent = "No synonyms available";
     return;
   }
-
+  
+  // Create clickable synonym elements
   list.slice(0, 10).forEach(word => {
     const span = document.createElement("span");
     span.textContent = word;
     span.classList.add("synonym");
-
+    
+    // Clicking synonym triggers new search
     span.addEventListener("click", () => {
       input.value = word;
       form.dispatchEvent(new Event("submit"));
