@@ -46,7 +46,7 @@
   https://dictionaryapi.dev/
 
 * Synonyms API (Datamuse):  
-  https://datamuseapi.com/
+  https://www.datamuse.com/api/
 
 ---
 
